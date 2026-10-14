@@ -1,34 +1,57 @@
-import {v2 as cloudinary} from 'cloudinary';
-import fs from 'fs';
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 
-
-    // Configuration
-cloudinary.config({ 
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-    api_key: process.env.CLOUDINNARY_API_KEY, 
-    api_secret: process.env.CLOUDINARY_API_SECRET // Click 'View API Keys' above to copy your API secret
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
 });
-const uploadOnCloudinary = async (localFilePath) => {
-    try{
-        if(!localFilePath) return null 
-        const respose=await cloudinary.uploader.upload(localFilePath,{
-            resource_type:"auto"
 
-        })
-        //file has been uploaded successfully
-        console.log("File has been uploaded successfully on cloudinary",
-        response.url);
+const uploadOnCloudinary = async (localFilePath) => {
+
+    try {
+
+        if (!localFilePath) {
+            console.log("No local file path provided");
+            return null;
+        }
+
+        console.log("Local file path:", localFilePath);
+
+        const response = await cloudinary.uploader.upload(
+            localFilePath,
+            {
+                resource_type: "auto"
+            }
+        );
+
+        //console.log(
+        //    "File uploaded successfully on Cloudinary:",
+        //    response.secure_url
+        //);
+        fs.unlinkSync(localFilePath) // Remove temporary file after successful upload
         return response;
 
-    }catch(error){
-        fs.unlinkSync(localFilePath)//removes the locally saved temp file as the upplload operation got  failed 
+        // Remove temporary file after successful upload
+        if (fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
+
+        return response;
+
+    } catch (error) {
+
+        console.log("========== CLOUDINARY ERROR ==========");
+        console.log(error);
+        console.log("======================================");
+
+        // Remove temporary file if upload failed
+        if (localFilePath && fs.existsSync(localFilePath)) {
+            fs.unlinkSync(localFilePath);
+        }
+
         return null;
-        
     }
+};
 
-}
-
-
-
-export{uploadonCloudinary}
-console.log(uploadResult);
+export { uploadOnCloudinary };
