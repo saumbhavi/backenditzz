@@ -8,5 +8,6 @@ const subscriptionSchema=new Schema({
         type:Schema.Types.ObjectId,  //CHANNEL TO WHICH SUBSCRIBER IS SUBSCRIBING
         ref:"User",
 
-})
+    }
+});
 export const Subscription=mongoose.model("Subscription",subscriptionSchema)
